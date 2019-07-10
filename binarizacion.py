@@ -1,9 +1,9 @@
-from PIL import Image
 from os import listdir
 from os.path import isfile, join
+import cv2 as cv
 
 class Binarizador:
-    umbralLow = 40
+    umbralLow = 50
     umbralHigh = 160
     def setFilename(self,filename):
         self.filename = filename
@@ -11,37 +11,22 @@ class Binarizador:
         self.umbralLow = umbralLow
         self.umbralHigh = umbralHigh
     def readImageColor(self):
-        return Image.open('muestra/'+self.filename)
+        return cv.imread('muestra/'+self.filename)
     def escalaGrises(self,fotoColor):
-        return fotoColor.convert('L')
+        return cv.cvtColor(fotoColor, cv.COLOR_BGR2GRAY)
     def rotate(self,foto,grados):
         return foto.rotate(grados,expand=True)
     def binaryImage(self,fotoGris):
-        datos = fotoGris.getdata()
-        datos_binarios=[]
-        total = len(datos)
-        cnt = 0
-        for x in datos:
-        #    #print(x)
-            cnt = cnt +1
-            curUmbral = self.umbralLow + (cnt*(self.umbralHigh-self.umbralLow))//total
-            if x<curUmbral:
-                datos_binarios.append(1)
-                continue
-            datos_binarios.append(0)
-        nueva_imagen=Image.new('1',fotoGris.size)
-        nueva_imagen.putdata(datos_binarios)
+        nueva_imagen = cv.adaptiveThreshold(fotoGris,255,cv.ADAPTIVE_THRESH_GAUSSIAN_C,cv.THRESH_BINARY_INV,11,2)
         return nueva_imagen
     def saveBinaryImage(self,fotoBinaria):
-        fotoBinaria.save('muestraBinaria/'+self.filename)
+        cv.imwrite('muestraBinaria/'+self.filename,fotoBinaria)
     def closeImage(self,foto):
-        foto.close()
+        cv.destroyAllWindows()
     def binarizar(self):
         foto = self.readImageColor()
         fotoGris = self.escalaGrises(foto)
-        fotoGris = self.rotate(fotoGris,270)
         fotoBinaria = self.binaryImage(fotoGris)
-        fotoBinaria = self.rotate(fotoBinaria,90)
         self.saveBinaryImage(fotoBinaria)
         self.closeImage(foto)
 
