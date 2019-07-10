@@ -31,11 +31,3 @@ class Binarizador:
         self.closeImage(foto)
 
 
-images = [f for f in listdir('muestra') if isfile(join('muestra', f))]
-
-binarizer = Binarizador()
-
-for image in images:
-    print(image)
-    binarizer.setFilename(image)
-    binarizer.binarizar()

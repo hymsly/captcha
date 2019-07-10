@@ -22,11 +22,15 @@ class Predictor:
 
     aciertoMas3 = 0
     aciertoTodo = 0
+
+    statByCaracter = {}
     def __init__(self):
         self.caracteres = []
         self.caracteresData = []
         self.aciertoMas3 = 0
         self.aciertoTodo = 0
+        self.aciertosByCaracter = {}
+        self.erroresByCaracter = {}
         plantillas = [f for f in listdir(folderPlantillas) if isfile(join(folderPlantillas, f))]
         for plantilla in plantillas:
             caracter = plantilla.split('.')[0]
@@ -64,9 +68,17 @@ class Predictor:
             for i in range(cntElements):
                 prediccion.append(res[i][1])
             if(currentCaracterObservado in prediccion):
+                if(currentCaracterObservado in self.aciertosByCaracter.keys()):
+                    self.aciertosByCaracter[currentCaracterObservado] += 1
+                else:
+                    self.aciertosByCaracter[currentCaracterObservado] = 1
                 cntCaracteresCorrectas+=1
             else:
                 predicted = False
+                if(currentCaracterObservado in self.erroresByCaracter.keys()):
+                    self.erroresByCaracter[currentCaracterObservado] += 1
+                else:
+                    self.erroresByCaracter[currentCaracterObservado] = 1
         if(cntCaracteresCorrectas>=3):
             self.aciertoMas3+=1
         if(predicted):
@@ -74,13 +86,4 @@ class Predictor:
         return cntCaracteresCorrectas>=3,predicted
 
     def getResults(self):
-        return self.aciertoMas3,self.aciertoTodo
-
-predictor = Predictor()
-
-for image in images:
-    predictor.setImage(image)
-    acertoMinimo3,acertoTodo = predictor.predecir(5)
-
-exitoMinimo3,exitoTodo = predictor.getResults()
-print(len(images),exitoMinimo3,exitoTodo)
+        return self.aciertoMas3,self.aciertoTodo,self.aciertosByCaracter,self.erroresByCaracter

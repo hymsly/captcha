@@ -13,7 +13,7 @@ class Cropper:
     step = 30
     numCrops = 5
     def Crop(self,filename):
-        im = cv.imread(folderIN + '/' + image,0)
+        im = cv.imread(folderIN + '/' + filename,0)
         ims = []
         pxCurrent = self.px
         for _ in range(self.numCrops):
@@ -21,9 +21,5 @@ class Cropper:
             pxCurrent += self.step
             ims.append(crop_img)
         for i in range(self.numCrops):
-            cv.imwrite(folderOut+'/'+str(i)+'_'+image,ims[i])
+            cv.imwrite(folderOut+'/'+str(i)+'_'+filename,ims[i])
 
-cropper = Cropper()
-
-for image in images:
-    cropper.Crop(image)
